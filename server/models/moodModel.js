@@ -1,4 +1,4 @@
-const { int } = require("blink-detection");
+const { int, string } = require("blink-detection");
 const mongoose = require("mongoose");
 
 const dbUser = process.env.DB_USERNAME;
@@ -8,22 +8,12 @@ const connectionString = 'mongodb+srv://${dbUser}${dbPass}@cluster-moodvec.sryz4
 
 mongoose.connect(connectionString);
 
-class MoodType {
-    static get SAD() {return Symbol("Sad");}
-    static get DEPRESSED() {return Symbol("Depressed");}
-
-    constructor(type) {
-        if (type !== MoodType.SAD && type != MoodType.DEPRESSED) {
-            throw new Error("Invalid Mood Type.");
-        }
-        this.type = type;
-    }
-}
+// TODO: finalize the mood schema
 
 const moodSchema = mongoose.Schema(
     {
         mood: {
-            type: MoodType,
+            type: string,
             required: true
         },
         strength: { // length of the vector
@@ -34,8 +24,12 @@ const moodSchema = mongoose.Schema(
             type: int,
             required: true
         },
-        activeness: {
+        activeness: { // y coord
             type: int,
+            required: true
+        },
+        date: {
+            type: string,
             required: true
         }
     }
