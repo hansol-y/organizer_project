@@ -4,17 +4,37 @@ const router = express.Router();
 
 const Mood = require('./models/moodModel');
 
-// TODO: Add user authentication
+// TODO: Add user authentication in './middleware'
 
 router.get('/moods', async (req, res) => {
     const userId = req.headers['x-user-id']; // assuming the request get userId using header -> TODO: to be changed when the user authentication is added
     try {
-        const result = retrieve(userId);
+        const result = Mood.find({userId: userId});
         if (result.length === 0) {
             res.status(204).send('No moods found for user %{userId}');
         } else {
             res.status(200).json(result);
         }
+    } catch(err) {
+        res.status(500).send({error: err});
+    }
+});
+
+router.get('/moods/${mood}', async (req, res) => {
+    
+    const userId = req.headers['x-user-id']; // assuming the request get userId using header -> TODO: to be changed when the user authentication is added
+    try {
+        // TODO: Implement the body to retrieve all the moods with given mood in given period (given as a header)
+    } catch(err) {
+        res.status(500).send({error: err});
+    }
+});
+
+router.get('/moods/${date}/${id}', async (req, res) => {
+    
+    const userId = req.headers['x-user-id']; // assuming the request get userId using header -> TODO: to be changed when the user authentication is added
+    try {
+        // TODO: Implement the body to retrieve the mood by date and id (getting specific mood record)
     } catch(err) {
         res.status(500).send({error: err});
     }
@@ -51,15 +71,14 @@ router.post('/moods', async (req, res) => {
     }
 });
 
-// Retrieve moods with given query parameters 
-// TODO: add more parameters based on the added GET requests
-async function retrieve(userId) {
+router.put('/moods/%{mood}', async(req, res) => {
+    const userId = req.headers['x-user-id'];
     try {
-        return await mood.find({userId: userId});
+
     } catch(err) {
-        throw err;
+        
     }
-};
+});
 
 module.exports = moodRouter;
 
