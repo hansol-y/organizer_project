@@ -31,11 +31,39 @@
   color: #61dafb;
 }
 
-/* @keyframes App-logo-spin {
+.pop {
+  position: relative;
+  width: 400px;
+  height: 400px;
+  display: inline-block;
+  animation: moveLogo;
+}
+
+p.Title {
+  font-weight: bold;
+  font-size: 50px;
+}
+
+p.description {
+  position:relative;
+  color: #3F3CA2;
+}
+
+@keyframes moveLogo {
   from {
-    transform: rotate(0deg);
+    margin: auto;
+    width: 50%;
+  }
+  50% {
+    margin: auto;
+    width: 50%;
+    transform: scale(2.0);
   }
   to {
-    transform: rotate(360deg);
+    width: 30%
   }
-} */
+}
+
+/*
+TODO: Style SignIn / SignUp
+*/
