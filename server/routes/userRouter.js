@@ -20,6 +20,6 @@ router.post('/user', async (req, res) => {
     }
 });
 
-router.put('/user/{$password}', async (req, res) => {
+router.put(`/user/{$password}`, async (req, res) => {
     // TODO: Update password + update user email as next put API
 })

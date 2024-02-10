@@ -20,7 +20,7 @@ router.get('/moods', async (req, res) => {
     }
 });
 
-router.get('/moods/${mood}', async (req, res) => {
+router.get(`/moods/${mood}`, async (req, res) => {
     
     const userId = req.headers['x-user-id']; // assuming the request get userId using header -> TODO: to be changed when the user authentication is added
     try {
@@ -30,7 +30,7 @@ router.get('/moods/${mood}', async (req, res) => {
     }
 });
 
-router.get('/moods/${date}/${id}', async (req, res) => {
+router.get(`/moods/${date}/${id}`, async (req, res) => {
     
     const userId = req.headers['x-user-id']; // assuming the request get userId using header -> TODO: to be changed when the user authentication is added
     try {
@@ -71,7 +71,7 @@ router.post('/moods', async (req, res) => {
     }
 });
 
-router.put('/moods/%{mood}', async(req, res) => {
+router.put(`/moods/%{mood}`, async(req, res) => {
     const userId = req.headers['x-user-id'];
     try {
 
