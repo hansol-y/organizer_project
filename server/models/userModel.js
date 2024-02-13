@@ -29,13 +29,8 @@ const userSchema = mongoose.Schema(
         email: {
             type: string,
             required: true
-        },
-        moods: {
-            type: [moodSchema],
-            required: true,
-            default: []
         }
     }
 );
 
-module.exports = mongoose.model("User", userSchema);
+module.exports = mongoose.model("User", userSchema, 'userCollection');

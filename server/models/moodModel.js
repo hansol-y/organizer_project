@@ -8,8 +8,6 @@ const connectionString = `mongodb+srv://${dbUser}${dbPass}@cluster-moodvec.sryz4
 
 mongoose.connect(connectionString);
 
-// TODO: finalize the mood schema
-
 const moodSchema = mongoose.Schema(
     {
         mood: {
@@ -31,8 +29,11 @@ const moodSchema = mongoose.Schema(
         date: {
             type: string,
             required: true
+        },
+        userId: {
+            type: mongoose.Schema.Types.ObjectId, ref: 'User'
         }
     }
 );
 
-module.exports = mongoose.model("Mood", moodSchema);
+module.exports = mongoose.model("Mood", moodSchema, 'moodCollection');
