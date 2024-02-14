@@ -1,13 +1,17 @@
 const User = require('./models/userModel');
+const bcrypt = require('bcrypt');
+
 const router = require('./router');
 
+// Sign up API
 router.post('/user/signup', async (req, res) => {
     try {
         const { userName, password, email } = req.body;
+        const hashedPassword = bcrypt.hash(password, 10);
 
         const newUser = new User({
             userName,
-            password,
+            hashedPassword,
             email
         });
 
@@ -17,18 +21,19 @@ router.post('/user/signup', async (req, res) => {
             message: 'User saved successfully',
             user: newUser.toObject(), // Convert to plain JavaScript object for response
         });
-        // TODO: deal with the response
 
     } catch(err) {
         return res.status(500).json({error: err.message});
     }
 });
 
+// Update password
 router.put('/user/update-password', async (req, res) => {
     try {
-        const {username, password} = req.headers;
-        const {currentPassword, newPassword} = req.body;
-        await User.update({userName: username, password: currentPassword}, {password: newPassword});
+        const {username} = req.headers;
+        const newPassword = req.body;
+        const newHashedPW = bcrypt.hash(newPassword, 10);
+        await User.update({userName: username}, {password: newHashedPW});
 
         res.status(201).json({
             message: 'Successfully updated user password'
@@ -38,11 +43,12 @@ router.put('/user/update-password', async (req, res) => {
     }
 });
 
+// Update email
 router.put('/user/update-email', async (req, res) => {
     try {
-        const {username, password} = req.headers;
+        const {username} = req.headers;
         const {currentEmail, newEmail} = req.body;
-        const user = await User.update({userName: username, password: password, email: currentEmail}, {email: newEmail});
+        const user = await User.update({userName: username, email: currentEmail}, {email: newEmail});
         if (!user) {
             res.status(404).json({
                 message: 'The user does not exist.',
@@ -60,37 +66,58 @@ router.put('/user/update-email', async (req, res) => {
     }
 });
 
+// DELETE user account
 router.delete('user', async (req, res) => {
     try {
         const {userName, password} = req.headers;
-        const user = await User.findOne({userName: userName, password: password});
+        const user = await User.findOne({userName: userName});
 
         if (!user) {
-            res.status(404).send("The user data does not exist.")
-        } else {
-            await User.deleteOne({userName: userName, password: password});
-            res.status(201).send("Successfully deleted the user data.");
+            return res.status(401).json({
+                message: "User not found",
+                error: "User with matching user ID does not exist"
+            })
+        } 
+        const passwordMatch = bcrypt.compare(password, user.password);
+
+        if (!passwordMatch) {
+            return res.status(401).json({
+                message: "User deletion failed",
+                error: "Invalid password"
+            })
         }
+
+        await User.deleteById(user.userId);
+        res.status(201).send("Successfully deleted the user data.");
+
+        // TODO: Add authorization for ensuring the user is signed in
+
     } catch(error) {
         return res.status(500).send(error);
     }
 });
 
-router.get('user/login', async (req, res) => {
+// Sign in API
+router.get('user/signin', async (req, res) => {
     try {
-        const { userId, password } = req.headers;
-        const user = await User.findOne({ userId: userId, password: password });
+        const { userName, password } = req.headers;
+        const user = await User.findOne({ userName: userName});
 
         if (!user) {
-            res.status(404).json({
-                message: "Cannot find the user. Please check your id and password"
-            });
-        } else {
-            res.status(201).json({
-                message: "Successfully logged in",
-                user: user.toObject()
+            return res.status(401).json({
+                message: "Sign in failed.",
+                error: "Invalid Id"
             });
         }
+        const passwordMatch = bcrypt.compare(password, user.password);
+        if (!passwordMatch) {
+            return res.status(401).json({
+                message: "Sign in failed",
+                error: "Invalid password"
+            })
+        }
+        // TODO: Add authentication
+        res.status(201).send("Sign in succeeded");
     } catch(err) {
         return res.status(500).json({error: err.message});
     }

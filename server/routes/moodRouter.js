@@ -2,14 +2,20 @@ const express = require('express');
 
 const router = express.Router();
 
+const User = require('./models/userModel');
 const Mood = require('./models/moodModel');
+const Auth = require('../middleware/auth');
 
-// TODO: Add user authentication in './middleware'
+// TODO: Add user authentication using `auth`
 
-router.get('/moods', async (req, res) => {
-    const userId = req.headers['x-user-id']; // assuming the request get userId using header -> TODO: to be changed when the user authentication is added
+// Get all moods of the user
+router.get(`/moods`, async (req, res) => {
+    const userId = req.headers['userId'];
     try {
-        const result = Mood.find({userId: userId});
+        // TODO: authentication
+        const user = await User.findOne({userId: userId});
+        const result = await Mood.find({user: user});
+
         if (result.length === 0) {
             res.status(204).send('No moods found for user %{userId}');
         } else {
@@ -20,30 +26,47 @@ router.get('/moods', async (req, res) => {
     }
 });
 
-router.get(`/moods/${mood}`, async (req, res) => {
-    
-    const userId = req.headers['x-user-id']; // assuming the request get userId using header -> TODO: to be changed when the user authentication is added
+// Get the user's all the mood records in given mood 
+router.get(`/moods/mood?${mood}`, async (req, res) => {
+    // return all the records of given mood
+    const userId = req.headers['userId']; // assuming the request get userId using header -> TODO: to be changed when the user authentication is added
+    const mood = req.params.mood;
     try {
-        // TODO: Implement the body to retrieve all the moods with given mood in given period (given as a header)
+        const user = await User.findOne({userId: userId});
+        const result = await Mood.find({user: user, mood: mood});
+        if (result.length === 0) {
+            res.status(204).send(`No records found with mood: ${mood}`);
+        } else {
+            res.status(201).json(result);
+        }
     } catch(err) {
-        res.status(500).send({error: err});
+        return res.status(500).send({error: err});
     }
 });
 
-router.get(`/moods/${date}/${id}`, async (req, res) => {
-    
-    const userId = req.headers['x-user-id']; // assuming the request get userId using header -> TODO: to be changed when the user authentication is added
+// Get the user's all the mood records in given date
+router.get(`/moods/date?${date}`, async (req, res) => {
+    const userId = req.headers['userId'];
+    const date = req.params.date;
     try {
-        // TODO: Implement the body to retrieve the mood by date and id (getting specific mood record)
+        const user = await User.findOne({userId: userId});
+        const result = await Mood.find({user: User, date: date});
+        if (result.length === 0) {
+            res.status(204).send('No moods found for user %{userId}');
+        } else {
+            res.status(201).json(result);
+        }
     } catch(err) {
-        res.status(500).send({error: err});
+        return res.status(500).send({error: err});
     }
 });
 
+// create a mood record
 router.post('/moods', async (req, res) => {
-    const userId = req.headers['x-user-id'];
+    const userId = req.headers['userId'];
     try {
         const { moodType, strength, personal, activeness, date } = req.body;
+        const user = await User.findOne({userId: userId});
 
         if (!date) {
             const today = new Date();
@@ -59,24 +82,32 @@ router.post('/moods', async (req, res) => {
             strength,
             personal,
             activeness,
-            date
+            date,
+            user
         });
 
-        await newMood.save();
+        const result = await newMood.save();
 
-        res.status(201).json("Saved");
+        res.status(201).json({
+            message: "Saved",
+            result: result
+        });
 
     } catch(err) {
-        res.status(500).send({error: err});
+        return res.status(500).send({error: err});
     }
 });
 
-router.put(`/moods/%{mood}`, async(req, res) => {
-    const userId = req.headers['x-user-id'];
+// Update a mood record
+router.put(`/moods/${moodId}`, async(req, res) => {
+    const userId = req.headers['userId']; // TODO: use it if required for authentication
+    const moodId = req.params.moodId;
+    const update = req.body;
     try {
-
+        const result = await Mood.findByIdAndUpdate(moodId, update);
+        res.status(201).json(result);
     } catch(err) {
-        
+        return res.status(500).json({error: err.message});
     }
 });
 
