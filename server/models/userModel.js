@@ -4,7 +4,7 @@ const mongoose = require("mongoose");
 const dbUser = process.env.DB_USERNAME;
 const dbPass = process.env.DB_PASSWORD;
 
-const connectionString = `mongodb+srv://${dbUser}${dbPass}@cluster-moodvec.sryz4qe.mongodb.net/?retryWrites=true&w=majority`;
+const connectionString = `mongodb+srv://${dbUser}${dbPass}@cluster-moodvec.sryz4qe.mongodb.net/moodVec_db?retryWrites=true&w=majority`;
 
 mongoose.connect(connectionString);
 
