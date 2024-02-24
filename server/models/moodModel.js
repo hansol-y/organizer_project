@@ -1,33 +1,27 @@
-const { int, string } = require("blink-detection");
+require('dotenv').config({path: '../.env'});
+
 const mongoose = require("mongoose");
-
-const dbUser = process.env.DB_USERNAME;
-const dbPass = process.env.DB_PASSWORD;
-
-const connectionString = `mongodb+srv://${dbUser}${dbPass}@cluster-moodvec.sryz4qe.mongodb.net/moodVec_db?retryWrites=true&w=majority`;
-
-mongoose.connect(connectionString);
 
 const moodSchema = mongoose.Schema(
     {
         mood: {
-            type: string,
+            type: String,
             required: true
         },
         strength: { // length of the vector
-            type: int,
+            type: Number,
             required: true
         },
         personal: { // x coord
-            type: int,
+            type: Number,
             required: true
         },
         activeness: { // y coord
-            type: int,
+            type: Number,
             required: true
         },
         date: {
-            type: string,
+            type: String,
             required: true
         },
         userId: {
