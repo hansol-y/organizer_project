@@ -14,3 +14,10 @@
 - As a user, I want to track my mood changes in the day so that I can see how today is going
 - As a user, I want to see the history of the mood change for the period they selected so that I can check my long-term mental state
 - As a user, I want to get notifications if my mood goes in to the warning-zone, or my mood goes down too much in a recent period
+
+## Mood Schema
+- moodType: Type of the mood (colour of the vector)
+- strength: How strong the feeling is (length of the vector)
+- personal: Is the mood based on personal events or more of social/public/interpersonal events? (x coord)
+- activeness: Does this mood trigger visible actions/behaviours? (y coord)
+- date: the day felt this mood (mostly be today) -> default: today
