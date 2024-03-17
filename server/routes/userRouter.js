@@ -5,6 +5,9 @@ const bcrypt = require('bcrypt');
 
 const router = express.Router();
 
+const jwtAuth = require('../middleware/jwtAuth');
+const JWT_SECRET = process.env.JWT_SECRET;
+
 const saltRound = 10;
 
 // Sign up API
@@ -75,7 +78,7 @@ router.put('/update-email', async (req, res) => {
 });
 
 // DELETE user account
-router.delete('', async (req, res) => {
+router.delete('', jwtAuth, async (req, res) => {
     try {
         const { userName, password } = req.body;
         const user = await User.findOne({userName: userName});
@@ -126,7 +129,10 @@ router.get('/signin', async (req, res) => {
             })
         }
         // TODO: Add authentication
-        res.status(201).send("Sign in succeeded");
+
+        const token = jwt.sign({userId}, JWT_SECRET);
+        res.json({token: token});
+        return res.status(201).json({message: "Sign in succeeded"});
     } catch(err) {
         return res.status(500).json({error: err.message});
     }
