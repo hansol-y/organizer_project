@@ -121,9 +121,9 @@ router.delete('', async (req, res) => {
 });
 
 // Sign in API
-router.get('/signin', async (req, res) => {
+router.post('/signin', async (req, res) => {
     try {
-        const { userName, password } = req.query;
+        const { userName, password } = req.body;
         console.log(`Finding user: ${userName}`);
         const user = await User.findOne({ userName: userName});
 

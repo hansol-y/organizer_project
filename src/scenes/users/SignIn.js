@@ -1,6 +1,7 @@
 // TODO: Organize directory of the js files
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+// import { useDispatch } from 'react-redux';
 import {Formik, Field, Form} from 'formik';
 import axios from 'axios';
 
@@ -12,16 +13,15 @@ const userApiEndpoint = `/api/user`;
 const SignIn = () => {
 
     const navigate = useNavigate();
+    // const dispatch = useDispatch();
 
     // const { userName, password } = req.body;
     const signIn = async (username, password) => {
         console.log(`Calling signIn function for ${username}`);
         try {
-            const response = await axios.get(`${userApiEndpoint}/signin`, {
-                params: {
-                    userName: username,
-                    password: password
-                }
+            const response = await axios.post(`${userApiEndpoint}/signin`, {
+                userName: username,
+                password: password
             });
 
             console.log(`response status: ${response.status}`);
@@ -65,7 +65,10 @@ const SignIn = () => {
                     Sign In
                 </h1>
             </header>
-            <Formik
+            <Formik initialValues={{
+                userName: "",
+                password: ""
+            }}
                 onSubmit={handleForSubmit}>
                 {({isSubmitting}) => (
                     <Form className='sign-up-form'>
