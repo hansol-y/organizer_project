@@ -4,16 +4,27 @@ const User = require('../models/userModel');
 const bcrypt = require('bcrypt');
 
 const router = express.Router();
+const cors = require('cors');
 
-const jwtAuth = require('../middleware/jwtAuth');
-const JWT_SECRET = process.env.JWT_SECRET;
+// const jwtAuth = require('../middleware/jwtAuth');
+// const JWT_SECRET = process.env.JWT_SECRET;
 
 const saltRound = 10;
+const whitelist = ['http://localhost:3000']
+const corsOptions = {
+    origin: whitelist,
+    credentials: true,
+    optionSuccessStatus: 200
+}
+
+router.use(cors(corsOptions));
 
 // Sign up API
 router.post('/signup', async (req, res) => {
     try {
         const { userName, password, email } = req.body;
+        req.header('Access-Control-Allow-Origin', whitelist.join(", "));
+        res.header('Access-Control-Allow-Origin', whitelist.join(", "));
         let hashedPassword = await bcrypt.hash(password, saltRound);
 
         const newUser = new User({
@@ -78,7 +89,8 @@ router.put('/update-email', async (req, res) => {
 });
 
 // DELETE user account
-router.delete('', jwtAuth, async (req, res) => {
+router.delete('', async (req, res) => {
+// router.delete('', jwtAuth, async (req, res) => {
     try {
         const { userName, password } = req.body;
         const user = await User.findOne({userName: userName});
@@ -111,14 +123,14 @@ router.delete('', jwtAuth, async (req, res) => {
 // Sign in API
 router.get('/signin', async (req, res) => {
     try {
-        const { userName, password } = req.body;
+        const { userName, password } = req.query;
         console.log(`Finding user: ${userName}`);
         const user = await User.findOne({ userName: userName});
 
         if (!user) {
             return res.status(404).json({
                 message: "Sign in failed.",
-                error: "Invalid Id"
+                error: "Given ID does not exist"
             });
         }
         const passwordMatch = await bcrypt.compare(password, user.password);
@@ -130,8 +142,8 @@ router.get('/signin', async (req, res) => {
         }
         // TODO: Add authentication
 
-        const token = jwt.sign({userId}, JWT_SECRET);
-        res.json({token: token});
+        // const token = jwt.sign({userId}, JWT_SECRET);
+        // res.json({token: token});
         return res.status(201).json({message: "Sign in succeeded"});
     } catch(err) {
         return res.status(500).json({error: err.message});
