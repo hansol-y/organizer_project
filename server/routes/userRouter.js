@@ -144,7 +144,8 @@ router.post('/signin', async (req, res) => {
 
         // const token = jwt.sign({userId}, JWT_SECRET);
         // res.json({token: token});
-        return res.status(201).json({message: "Sign in succeeded"});
+
+        return res.status(201).json({message: "Sign in succeeded", user: JSON.stringify(user)});
     } catch(err) {
         return res.status(500).json({error: err.message});
     }

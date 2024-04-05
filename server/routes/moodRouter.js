@@ -46,7 +46,7 @@ router.get('/mood/:mood', async (req, res) => {
 
 // Get the user's all the mood records in given date
 router.get('/date/:date', async (req, res) => {
-    const userId = req.headers['userId'];
+    const userId = req.body['userId'];
     const date = req.params.date;
     try {
         const user = await User.findOne({userId: userId});
