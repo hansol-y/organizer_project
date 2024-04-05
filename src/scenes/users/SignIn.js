@@ -1,7 +1,5 @@
-// TODO: Organize directory of the js files
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
-// import { useDispatch } from 'react-redux';
+import React, {useState} from 'react';
+import { useNavigate, useHistory } from 'react-router-dom';
 import {Formik, Field, Form} from 'formik';
 import axios from 'axios';
 
@@ -13,7 +11,8 @@ const userApiEndpoint = `/api/user`;
 const SignIn = () => {
 
     const navigate = useNavigate();
-    // const dispatch = useDispatch();
+    const history = useHistory();
+    const [user, setUser] = useState(null);
 
     // const { userName, password } = req.body;
     const signIn = async (username, password) => {
@@ -29,8 +28,13 @@ const SignIn = () => {
             if (response.status !== 201) {
                 throw new Error(`Sign in failed: ${response.data}`);
             } else {
+                console.log(response.data.user);
+                setUser(response.data.user);
                 alert(`Welcome ${username}!`);
-                navigate("/Dashboard");
+                history.push({
+                    pathname: "/Dashboard",
+                    state: { user }
+                });
             }
         } catch(error) {
             alert(`Sign in failed: ${error.message}`);
