@@ -3,6 +3,7 @@ import SignUp from './scenes/users/SignUp.js';
 import SignIn from './scenes/users/SignIn.js';
 import Main from './scenes/board/Main.js';
 import Dashboard from './scenes/board/Dashboard.js';
+import Create from './scenes/mood/createMood.js';
 
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
@@ -17,6 +18,7 @@ function App() {
           <Route exact path="/SignUp" element={<SignUp />} />
           <Route exact path="/SignIn" element={<SignIn />} />
           <Route exact path="/Dashboard" element={<Dashboard />} />
+          <Route exact path ="/Create" element={<Create/>} />
         </Routes>
 
         <nav className="Main-signUp-signIn">
