@@ -19,6 +19,7 @@
     "react-router-dom": "^6.22.0",
     "react-scripts": "5.0.1",
     "stable": "^0.1.8",
+    "state": "^0.2.0",
     "stream": "^0.0.2",
     "util": "^0.12.5",
     "vm": "^0.1.0",
