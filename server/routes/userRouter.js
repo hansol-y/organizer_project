@@ -22,13 +22,13 @@ router.use(cors(corsOptions));
 // Sign up API
 router.post('/signup', async (req, res) => {
     try {
-        const { userName, password, email } = req.body;
+        const { username, password, email } = req.body;
         req.header('Access-Control-Allow-Origin', whitelist.join(", "));
         res.header('Access-Control-Allow-Origin', whitelist.join(", "));
         let hashedPassword = await bcrypt.hash(password, saltRound);
 
         const newUser = new User({
-            userName: userName,
+            username: userName,
             password: hashedPassword,
             email: email
         });
@@ -49,9 +49,19 @@ router.post('/signup', async (req, res) => {
 router.put('/update-password', async (req, res) => {
     try {
         const {username} = req.headers;
+        const {password} = req.body;
         const {newPassword} = req.body;
-        const newHashedPW = await bcrypt.hash(newPassword, saltRound);
-        await User.findOneAndUpdate({ userName: username }, { password: newHashedPW});
+        const user = await User.findOne({ username: username });
+        const isCurrentOneMatching = await bcrypt.compare(password, user.password);
+        if (isCurrentOneMatching) {
+            const newHashedPW = await bcrypt.hash(newPassword, saltRound);
+            await User.findOneAndUpdate({ username: username }, { password: newHashedPW})
+        } else {
+            res.status(404).json({
+                message: 'Invalid Password. Please check your password again'
+            })
+            return res;
+        }
 
         res.status(201).json({
             message: 'Successfully updated user password'
@@ -66,7 +76,7 @@ router.put('/update-email', async (req, res) => {
     try {
         const {username} = req.headers;
         const {currentEmail, newEmail} = req.body;
-        const user = await User.findOne({ userName: username });
+        const user = await User.findOne({ username: username });
 
         if (!user) {
             res.status(404).json({
@@ -76,7 +86,7 @@ router.put('/update-email', async (req, res) => {
             return res;
         }
 
-        await User.findOneAndUpdate({ userName: username }, { email: newEmail});
+        await User.findOneAndUpdate({ username: username }, { email: newEmail});
         res.status(201).json({
             message: 'Successfully updated user email',
             previous_email: currentEmail,
@@ -92,8 +102,8 @@ router.put('/update-email', async (req, res) => {
 router.delete('', async (req, res) => {
 // router.delete('', jwtAuth, async (req, res) => {
     try {
-        const { userName, password } = req.body;
-        const user = await User.findOne({userName: userName});
+        const { username, password } = req.body;
+        const user = await User.findOne({username: username});
 
         if (!user) {
             return res.status(401).json({
@@ -123,9 +133,9 @@ router.delete('', async (req, res) => {
 // Sign in API
 router.post('/signin', async (req, res) => {
     try {
-        const { userName, password } = req.body;
-        console.log(`Finding user: ${userName}`);
-        const user = await User.findOne({ userName: userName});
+        const { username, password } = req.body;
+        console.log(`Finding user: ${username}`);
+        const user = await User.findOne({ username: username});
 
         if (!user) {
             return res.status(404).json({
