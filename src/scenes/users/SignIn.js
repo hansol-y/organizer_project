@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import { useNavigate, useHistory } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import {Formik, Field, Form} from 'formik';
 import axios from 'axios';
 
@@ -10,16 +10,15 @@ const userApiEndpoint = `/api/user`;
 
 const SignIn = () => {
 
-    const navigate = useNavigate();
     const history = useHistory();
     const [user, setUser] = useState(null);
 
-    // const { userName, password } = req.body;
+    // const { username, password } = req.body;
     const signIn = async (username, password) => {
         console.log(`Calling signIn function for ${username}`);
         try {
             const response = await axios.post(`${userApiEndpoint}/signin`, {
-                userName: username,
+                username: username,
                 password: password
             });
 
@@ -42,11 +41,11 @@ const SignIn = () => {
     }
 
     const handleForSubmit = async (values, onSubmitProps) => {
-        console.log(values.userName);
+        console.log(values.username);
         console.log(values.password);
-        const {userName, password} = values;
+        const {username, password} = values;
 
-        if (!userName) {
+        if (!username) {
             alert("Please enter your user name");
             return;
         }
@@ -58,7 +57,7 @@ const SignIn = () => {
 
         onSubmitProps.setSubmitting(true);
     
-        await signIn(userName, password);
+        await signIn(username, password);
     }
 
 
@@ -76,9 +75,9 @@ const SignIn = () => {
                 onSubmit={handleForSubmit}>
                 {({isSubmitting}) => (
                     <Form className='sign-up-form'>
-                        <label htmlFor='userName'>User Name</label>
+                        <label htmlFor='username'>User Name</label>
                         <br />
-                        <Field name="userName" />
+                        <Field name="username" />
                         <br />
 
                         <label htmlFor='password'>Password</label>

@@ -10,7 +10,7 @@ const userSchema = mongoose.Schema(
             index: true,
             auto: true
         },
-        userName: { 
+        username: { 
             type: String,
             required: true,
             unique: true

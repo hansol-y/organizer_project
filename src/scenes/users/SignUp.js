@@ -1,6 +1,6 @@
 // TODO: Organize directory of the js files
 
-import React, {useState} from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import {Formik, Field, Form} from 'formik';
 import axios from 'axios';
@@ -16,7 +16,7 @@ const whitelist = ['http://localhost:3000']
 const SignUp = () => {
     const navigate = useNavigate();
 
-    // { userName, password, email } = req.body
+    // { username, password, email } = req.body
     const signUp = async (username, password, email) => {
         console.log("Start calling signUp function");
         console.log(username, password, email);
@@ -26,7 +26,7 @@ const SignUp = () => {
             const origins = whitelist.join(", ");
             const response = await axios.post(`${userApiEndpoint}/signup`, 
             {
-                userName: username,
+                username: username,
                 password: password,
                 email: email
             }, 
@@ -53,9 +53,9 @@ const SignUp = () => {
     }
 
     const handleForSubmit = async (values, onSubmitProps) => {
-        const {userName, password, email} = values;
+        const {username, password, email} = values;
     
-        if (!userName) {
+        if (!username) {
             alert("The given user name is invalid");
             return;
         }
@@ -71,7 +71,7 @@ const SignUp = () => {
     
         onSubmitProps.setSubmitting(true);
     
-        await signUp(userName, password, email);
+        await signUp(username, password, email);
         onSubmitProps.resetForm();
     }
     
@@ -87,9 +87,9 @@ const SignUp = () => {
                 }} onSubmit={handleForSubmit}>
                 {({isSubmitting}) => (
                     <Form className='sign-up-form'>
-                        <label htmlFor='userName'>User Name</label>
+                        <label htmlFor='username'>User Name</label>
                         <br />
-                        <Field name="userName" />
+                        <Field name="username" />
                         <br />
 
                         <label htmlFor='password'>Password</label>
