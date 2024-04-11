@@ -9,32 +9,29 @@ import logo from '../../assets/coordinate_s.png';
 
 import '../../App.css';
 
-// const backendPort = process.env.BACKEND_PORT;
-const userApiEndpoint = `/api/user`
-const whitelist = ['http://localhost:3000']
+const backendUrl = process.env.REACT_APP_BACKEND_URL;
+
+const userApiEndpoint = `${backendUrl}/api/user`
 
 const SignUp = () => {
     const navigate = useNavigate();
 
     // { username, password, email } = req.body
-    const signUp = async (username, password, email) => {
+    const signUp = async (userId, username, password, email) => {
         console.log("Start calling signUp function");
         console.log(username, password, email);
         try {
             console.log("Sending POST request for user registration");
-            console.log(`${userApiEndpoint}/signup`);
-            const origins = whitelist.join(", ");
             const response = await axios.post(`${userApiEndpoint}/signup`, 
             {
+                userId: userId,
                 username: username,
                 password: password,
                 email: email
             }, 
             {
                 headers: {
-                    "Content-Type": 'application/json',
-                    'Access-Control-Allow-Origin': origins,
-                    "Access-Control-Allow-Methods": "GET,PUT,POST,DELETE,PATCH,OPTIONS"
+                    "Content-Type": 'application/json'
                 }
             });
 
@@ -43,17 +40,22 @@ const SignUp = () => {
             if (response.status !== 201) {
                 throw new Error(`Sign-up failed: ${response.data}`);
             } else {
-                alert(`Successfully registered User ${username}`);
+                alert(`Successfully registered User ${userId}`);
                 navigate("/SignIn");
             }
         } catch (error) {
             console.error('Error during sign-up\n', error.message);
-            alert(`Failed registering ${username}.`);
+            alert(`Failed registering ${userId}.`);
         }
     }
 
     const handleForSubmit = async (values, onSubmitProps) => {
-        const {username, password, email} = values;
+        const {userId, username, password, email} = values;
+
+        if (!userId) {
+            alert("The given user ID is invalid");
+            return;
+        }
     
         if (!username) {
             alert("The given user name is invalid");
@@ -71,7 +73,7 @@ const SignUp = () => {
     
         onSubmitProps.setSubmitting(true);
     
-        await signUp(username, password, email);
+        await signUp(userId, username, password, email);
         onSubmitProps.resetForm();
     }
     
@@ -81,12 +83,18 @@ const SignUp = () => {
             <img src={logo} className="mid-logo" alt="logo" />
             <Formik
                 initialValues={{
+                    userId: '',
                     userName: '',
                     password: '',
                     email: ''
                 }} onSubmit={handleForSubmit}>
                 {({isSubmitting}) => (
                     <Form className='sign-up-form'>
+                        <label htmlFor='userId'>User ID</label>
+                        <br />
+                        <Field name="userId" />
+                        <br />
+
                         <label htmlFor='username'>User Name</label>
                         <br />
                         <Field name="username" />

@@ -4,16 +4,15 @@ const mongoose = require("mongoose");
 
 const userSchema = mongoose.Schema(
     {
-        userId: { // auto-create
-            type: mongoose.Schema.Types.ObjectId,
+        userId: {
+            type: String,
             required: true,
-            index: true,
-            auto: true
+            unique: true
         },
         username: { 
             type: String,
             required: true,
-            unique: true
+            unique: false
         },
         password: { 
             type: String,

@@ -1,24 +1,28 @@
-import React, {useState} from 'react';
-import { useHistory } from 'react-router-dom';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {Formik, Field, Form} from 'formik';
 import axios from 'axios';
 
 import '../../App.css';
 
+// react-router-dom v6 does not use useHistory anymore; use useNavigate instead!
+
 // const backendPort = process.env.BACKEND_PORT;
-const userApiEndpoint = `/api/user`;
+const backendUrl = process.env.REACT_APP_BACKEND_URL;
+
+const userApiEndpoint = `${backendUrl}/api/user`
 
 const SignIn = () => {
 
-    const history = useHistory();
     const [user, setUser] = useState(null);
+    const navigate = useNavigate();
 
     // const { username, password } = req.body;
-    const signIn = async (username, password) => {
-        console.log(`Calling signIn function for ${username}`);
+    const signIn = async (userId, password) => {
+        console.log(`Calling signIn function for ID ${userId}`);
         try {
             const response = await axios.post(`${userApiEndpoint}/signin`, {
-                username: username,
+                userId: userId,
                 password: password
             });
 
@@ -29,11 +33,8 @@ const SignIn = () => {
             } else {
                 console.log(response.data.user);
                 setUser(response.data.user);
-                alert(`Welcome ${username}!`);
-                history.push({
-                    pathname: "/Dashboard",
-                    state: { user }
-                });
+                alert(`Welcome ${userId}!`);
+                navigate("/Dashboard", { state: { user: user}});
             }
         } catch(error) {
             alert(`Sign in failed: ${error.message}`);
@@ -41,11 +42,9 @@ const SignIn = () => {
     }
 
     const handleForSubmit = async (values, onSubmitProps) => {
-        console.log(values.username);
-        console.log(values.password);
-        const {username, password} = values;
+        const {userId, password} = values;
 
-        if (!username) {
+        if (!userId) {
             alert("Please enter your user name");
             return;
         }
@@ -57,9 +56,8 @@ const SignIn = () => {
 
         onSubmitProps.setSubmitting(true);
     
-        await signIn(username, password);
+        await signIn(userId, password);
     }
-
 
     return (
         <div className='sign-up'>
@@ -69,15 +67,15 @@ const SignIn = () => {
                 </h1>
             </header>
             <Formik initialValues={{
-                userName: "",
+                userId: "",
                 password: ""
             }}
                 onSubmit={handleForSubmit}>
                 {({isSubmitting}) => (
                     <Form className='sign-up-form'>
-                        <label htmlFor='username'>User Name</label>
+                        <label htmlFor='userId'>User Name</label>
                         <br />
-                        <Field name="username" />
+                        <Field name="userId" />
                         <br />
 
                         <label htmlFor='password'>Password</label>

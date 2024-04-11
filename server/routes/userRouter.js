@@ -22,13 +22,14 @@ router.use(cors(corsOptions));
 // Sign up API
 router.post('/signup', async (req, res) => {
     try {
-        const { username, password, email } = req.body;
+        const { userId, username, password, email } = req.body;
         req.header('Access-Control-Allow-Origin', whitelist.join(", "));
         res.header('Access-Control-Allow-Origin', whitelist.join(", "));
         let hashedPassword = await bcrypt.hash(password, saltRound);
 
         const newUser = new User({
-            username: userName,
+            userId: userId,
+            username: username,
             password: hashedPassword,
             email: email
         });
@@ -120,7 +121,7 @@ router.delete('', async (req, res) => {
             })
         }
 
-        await User.deleteOne({userId: user.userId});
+        await User.deleteOne({_id: user._id});
         res.status(201).send("Successfully deleted the user data.");
 
         // TODO: Add authorization for ensuring the user is signed in
@@ -133,14 +134,14 @@ router.delete('', async (req, res) => {
 // Sign in API
 router.post('/signin', async (req, res) => {
     try {
-        const { username, password } = req.body;
-        console.log(`Finding user: ${username}`);
-        const user = await User.findOne({ username: username});
+        const { userId, password } = req.body;
+        console.log(`Finding user: ${userId}`);
+        const user = await User.findOne({ userId: userId});
 
         if (!user) {
             return res.status(404).json({
                 message: "Sign in failed.",
-                error: "Given ID does not exist"
+                error: `Given ID ${userId} does not exist`
             });
         }
         const passwordMatch = await bcrypt.compare(password, user.password);
