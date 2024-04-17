@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import {Formik, Field, Form} from 'formik';
 import axios from 'axios';
 
-import '../../App.css';
+import './Users.css';
 
 // react-router-dom v6 does not use useHistory anymore; use useNavigate instead!
 
@@ -14,7 +14,7 @@ const userApiEndpoint = `${backendUrl}/api/user`
 
 const SignIn = () => {
 
-    const [user, setUser] = useState(null);
+    const [user, setUser] =useState(null);
     const navigate = useNavigate();
 
     // const { username, password } = req.body;
@@ -31,10 +31,10 @@ const SignIn = () => {
             if (response.status !== 201) {
                 throw new Error(`Sign in failed: ${response.data}`);
             } else {
-                console.log(response.data.user);
-                setUser(response.data.user);
-                alert(`Welcome ${userId}!`);
-                navigate("/Dashboard", { state: { user: user}});
+                const userData = JSON.parse(response.data.user);
+                setUser(userData);
+                navigate("/Dashboard", { state: { userId: userId, password: password, username: userData.username, email: userData.email}});
+                alert(`Welcome ${userData.username}!`);
             }
         } catch(error) {
             alert(`Sign in failed: ${error.message}`);

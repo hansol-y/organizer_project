@@ -64,34 +64,15 @@ p.description {
   }
 }
 
-/*
-TODO: Style SignIn / SignUp
-*/
-.sign-up {
-  margin: auto;
-  font-family: 'Comfortaa';
-}
 
-.Main-signUp-signIn > * {
-  margin-right: 15px;
-  margin-left: 15px;
-  font-style: bold;
-  font-family: 'Comfortaa'
-}
-
-.Main-signUp-signIn {
-  text-align: center;
-}
-
-.mid-logo {
-  height: 80px;
-  position: relative;
+.my-info-side {
+  width: 80px;
+  height: 50px;
+  display:flex;
   top: 10px;
-  left: 10px;
+  right: 10px;
 }
 
-.sign-up-form {
-  margin-block-start: 50px;
-  width: 100%;
-  size: relative;
+.sidebar {
+  left: 10px;
 }

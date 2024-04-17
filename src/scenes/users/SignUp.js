@@ -6,8 +6,7 @@ import {Formik, Field, Form} from 'formik';
 import axios from 'axios';
 
 import logo from '../../assets/coordinate_s.png';
-
-import '../../App.css';
+import './Users.css';
 
 const backendUrl = process.env.REACT_APP_BACKEND_URL;
 
