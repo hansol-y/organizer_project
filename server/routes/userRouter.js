@@ -46,17 +46,46 @@ router.post('/signup', async (req, res) => {
     }
 });
 
+// Update username
+router.put('/update-username', async (req, res) => {
+    try {
+        const {userid} = req.headers;
+        const {newUsername} = req.body;
+        const userWithNewName = await User.findOne({username: newUsername});
+        if (userWithNewName) {
+            res.status(409).json({
+                message: 'The user name already exists. Please choose another one.'
+            });
+            return res;
+        }
+        const user = await User.findOne({ userId: userid });
+        if (user) {
+            await User.findOneAndUpdate({ userId: userid }, { username: newUsername})
+        } else {
+            res.status(404).json({
+                message: 'Cannot find your user data. Please check your user data again'
+            })
+            return res;
+        }
+
+        res.status(201).json({
+            message: 'Successfully updated user password'
+        });
+    } catch(err) {
+        return res.status(500).json({error: err.message});
+    }
+});
+
 // Update password
 router.put('/update-password', async (req, res) => {
     try {
-        const {username} = req.headers;
-        const {password} = req.body;
-        const {newPassword} = req.body;
-        const user = await User.findOne({ username: username });
+        const {userid} = req.headers;
+        const {password, newPassword} = req.body;
+        const user = await User.findOne({ userId: userid });
         const isCurrentOneMatching = await bcrypt.compare(password, user.password);
         if (isCurrentOneMatching) {
             const newHashedPW = await bcrypt.hash(newPassword, saltRound);
-            await User.findOneAndUpdate({ username: username }, { password: newHashedPW})
+            await User.findOneAndUpdate({ userId: userid }, { password: newHashedPW})
         } else {
             res.status(404).json({
                 message: 'Invalid Password. Please check your password again'
@@ -75,9 +104,9 @@ router.put('/update-password', async (req, res) => {
 // Update email
 router.put('/update-email', async (req, res) => {
     try {
-        const {username} = req.headers;
+        const {userid} = req.headers;
         const {currentEmail, newEmail} = req.body;
-        const user = await User.findOne({ username: username });
+        const user = await User.findOne({ userId: userid });
 
         if (!user) {
             res.status(404).json({
@@ -87,7 +116,7 @@ router.put('/update-email', async (req, res) => {
             return res;
         }
 
-        await User.findOneAndUpdate({ username: username }, { email: newEmail});
+        await User.findOneAndUpdate({ userId: userid }, { email: newEmail});
         res.status(201).json({
             message: 'Successfully updated user email',
             previous_email: currentEmail,
