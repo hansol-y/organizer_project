@@ -1,10 +1,8 @@
 require('dotenv').config({path: '../.env'});
 
-
 var express = require("express");
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
-
 var app = express();
 const PORT = process.env.BACKEND_PORT || 8000;
 

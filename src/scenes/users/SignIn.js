@@ -60,8 +60,8 @@ const SignIn = () => {
     }
 
     return (
-        <div className='sign-up'>
-            <header className='sign-up-header'>
+        <div className='sign-in'>
+            <header className='sign-in-header'>
                 <h1 className='title'>
                     Sign In
                 </h1>
@@ -73,7 +73,7 @@ const SignIn = () => {
                 onSubmit={handleForSubmit}>
                 {({isSubmitting}) => (
                     <Form className='sign-up-form'>
-                        <label htmlFor='userId'>User Name</label>
+                        <label htmlFor='userId'>User ID</label>
                         <br />
                         <Field name="userId" />
                         <br />
