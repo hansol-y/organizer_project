@@ -1,15 +1,17 @@
 @import url("https://fonts.googleapis.com/css2?family=Comfortaa:wght@300;400;500;600;700&family=Mooli&display=swap");
 
-.sign-up {
-    margin: auto;
-    font-family: 'Comfortaa';
-  }
+* {
+  font-family: 'Comfortaa';
+}
+
+* hr {
+  display: none;
+}
   
   .Main-signUp-signIn > * {
     margin-right: 15px;
     margin-left: 15px;
     font-style: bold;
-    font-family: 'Comfortaa'
   }
   
   .Main-signUp-signIn {
@@ -27,4 +29,32 @@
     margin-block-start: 50px;
     width: 100%;
     size: relative;
+  }
+
+  .my-page {
+    width: 100%;
+  }
+
+  .section {
+    display: flex;
+  }
+
+  .three-section {
+    padding: 20px;
+  }
+
+  .link-button {
+    border: none;
+    color: black;
+    padding: 10px 25px;
+    text-align: center;
+    text-decoration: none;
+  }
+
+  .submit {
+    border: none;
+    color: black;
+    padding: 10px 25px;
+    text-align: center;
+    text-decoration: none;
   }
