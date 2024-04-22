@@ -21,11 +21,20 @@ const moodSchema = mongoose.Schema(
             required: true
         },
         date: {
-            type: String,
+            type: Date,
             required: true
         },
-        _id: {
-            type: mongoose.Schema.Types.ObjectId, ref: 'User'
+        month: {
+            type: Number,
+            required: true
+        },
+        year: {
+            type: Number,
+            required: true
+        },
+        user: {
+            type: Object,
+            required: true
         }
     }
 );
