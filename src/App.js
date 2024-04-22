@@ -1,11 +1,11 @@
-import './App.css';
 import SignUp from './scenes/users/SignUp.js';
 import SignIn from './scenes/users/SignIn.js';
 import Main from './scenes/board/Main.js';
 import Dashboard from './scenes/board/Dashboard.js';
 import Create from './scenes/mood/createMood.js';
 import MyPage from './scenes/users/MyPage.js';
-import MoodView from './scenes/mood/MoodView.js';
+import MoodCoord from './scenes/mood/MoodCoord.js';
+import History from './scenes/mood/MoodHistory.js';
 import Suggestion from './scenes/mood/Suggestion.js';
 import Default from './scenes/board/Default.js';
 
@@ -27,10 +27,31 @@ function App() {
               <Dashboard />
             </Default>
           } />
-          <Route exact path ="/Create" element={<Create/>} />
-          <Route exact path ="/MyPage" element={<MyPage/>} />
-          <Route exact path ="/MoodView" element={<MoodView/>} />
-          <Route exact path ="/Suggestion" element={<Suggestion/>} />
+          <Route exact path="/Create" element={
+            <Default>
+              <Create />
+            </Default>
+          } />
+          <Route exact path="/MyPage" element={
+            <Default>
+              <MyPage />
+            </Default>
+          } />
+          <Route exact path="/Coord" element={
+            <Default>
+              <MoodCoord />
+            </Default>
+          } />
+          <Route exact path="/History" element={
+            <Default>
+              <History />
+            </Default>
+          } />
+          <Route exact path="/Suggestion" element={
+            <Default>
+              <Suggestion />
+            </Default>
+          } />
         </Routes>
 
         <hr />
