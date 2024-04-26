@@ -27,12 +27,12 @@ router.get('', async (req, res) => {
 });
 
 // Get the user's all the mood records in given mood 
-router.get('/mood/:mood', async (req, res) => {
+router.get(`/mood`, async (req, res) => {
     // return all the records of given mood
-    const _id = req.headers['_id']; // assuming the request get _id using header -> TODO: to be changed when the user authentication is added
+    const userid = req.headers['userid']; // assuming the request get _id using header -> TODO: to be changed when the user authentication is added
     const mood = req.params.mood;
     try {
-        const user = await User.findOne({_id: _id});
+        const user = await User.findOne({userId: userid});
         const result = await Mood.find({user: user, mood: mood});
         if (result.length === 0) {
             res.status(204).send(`No records found with mood: ${mood}`);
@@ -45,12 +45,21 @@ router.get('/mood/:mood', async (req, res) => {
 });
 
 // Get the user's all the mood records in given date
-router.get('/date/:date', async (req, res) => {
-    const userid = req.body['userid'];
-    const date = req.params;
+router.get('/date', async (req, res) => {
+    const userid = req.headers['userid'];
+    const { date } = req.query;
+    const dateObj = new Date(date);
+    const year = dateObj.getFullYear();
+    const month = dateObj.getMonth() + 1;
+    const dateInNum = dateObj.getDate();
     try {
         const user = await User.findOne({userId: userid});
-        const result = await Mood.find({userId: userid, date: date});
+        console.log(user);
+        if (!user) {
+            res.status(404).send(`Your user data is not found. Please check your ID again`);
+            return res;
+        }
+        const result = await Mood.find({date: dateInNum, month: month, year: year, user: user});
         if (result.length === 0) {
             res.status(204).send(`No moods found for user ${user.userId}`);
         } else {
@@ -62,13 +71,13 @@ router.get('/date/:date', async (req, res) => {
 });
 
 // Get the user's all the mood records in given month
-router.get('/date/:month/:year', async (req, res) => {
-    const userid = req.body['userid'];
-    const month = req.params.month;
+router.get('/month', async (req, res) => {
+    const userid = req.headers['userid'];
+    const {month, year} = req.query;
 
     try {
         const user = await User.findOne({userId: userid});
-        const result = await Mood.find({user: user, month: month, year: year});
+        const result = await Mood.find({user: user, month: parseInt(month), year: parseInt(year)});
         if (result.length === 0) {
             res.status(204).send(`No moods found for user ${user.userId}`);
         } else {
@@ -83,24 +92,29 @@ router.get('/date/:month/:year', async (req, res) => {
 router.post('', async (req, res) => {
     const userid = req.headers['userid'];
     try {
-        let { mood, strength, personal, activeness, date, year, month } = req.body;
+        let { mood, strength, personal, activeness, date, year, month, hour, minute, second } = req.body;
         const user = await User.findOne({userId: userid});
 
-        if (!date || !month || !year) {
-            const today = new Date();
-            year = today.getFullYear();
-            month = today.getMonth();
-            date = today;
-        };
+        const now = new Date();
 
+        const dateToStore = !(date) ? now.getDate() : date;
+        const monthToStore = !(month) ? now.getMonth() + 1 : month;
+        const yearToStore = !(year) ? now.getFullYear() : year;
+        const hourToStore = !(hour) ? now.getHours() : hour;
+        const minToStore = !(minute) ? now.getMinutes() : minute;
+        const secToStore = !(second) ? now.getSeconds() : second;
+ 
         const newMood = new Mood({
             mood: mood,
             strength: strength,
             personal: personal,
             activeness: activeness,
-            date: date,
-            month: month,
-            year: year,
+            date: dateToStore,
+            month: monthToStore,
+            year: yearToStore,
+            hour: hourToStore,
+            minute: minToStore,
+            second: secToStore,
             user: user
         });
 

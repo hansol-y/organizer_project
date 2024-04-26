@@ -21,7 +21,7 @@ const moodSchema = mongoose.Schema(
             required: true
         },
         date: {
-            type: Date,
+            type: Number,
             required: true
         },
         month: {
@@ -31,6 +31,15 @@ const moodSchema = mongoose.Schema(
         year: {
             type: Number,
             required: true
+        },
+        hour: {
+            type:  Number
+        },
+        minute: {
+            type: Number
+        },
+        second: {
+            type: Number
         },
         user: {
             type: Object,
