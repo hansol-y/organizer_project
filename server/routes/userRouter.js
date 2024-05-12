@@ -6,11 +6,11 @@ const bcrypt = require('bcrypt');
 const router = express.Router();
 const cors = require('cors');
 
-// const jwtAuth = require('../middleware/jwtAuth');
-// const JWT_SECRET = process.env.JWT_SECRET;
+const jwt = require('jsonwebtoken');
+const JWT_SECRET = process.env.JWT_SECRET;
 
 const saltRound = 10;
-const whitelist = ['http://localhost:3000']
+const whitelist = ['http://localhost:3000'];
 const corsOptions = {
     origin: whitelist,
     credentials: true,
@@ -49,28 +49,30 @@ router.post('/signup', async (req, res) => {
 // Update username
 router.put('/update-username', async (req, res) => {
     try {
-        const {userid} = req.headers;
-        const {newUsername} = req.body;
-        const userWithNewName = await User.findOne({username: newUsername});
-        if (userWithNewName) {
-            res.status(409).json({
-                message: 'The user name already exists. Please choose another one.'
-            });
-            return res;
-        }
-        const user = await User.findOne({ userId: userid });
-        if (user) {
-            await User.findOneAndUpdate({ userId: userid }, { username: newUsername})
-        } else {
-            res.status(404).json({
-                message: 'Cannot find your user data. Please check your user data again'
-            })
-            return res;
-        }
+        const token = req.headers.authorization;
+        const newUsername = req.body;
 
-        res.status(201).json({
-            message: 'Successfully updated user password'
-        });
+        jwt.verify(token, JWT_SECRET, async (err, authorizedData) => {
+            const existingUserWithNewName = await User.findOne({username: newUsername});
+            if (existingUserWithNewName) {
+                res.status(409).json({
+                    message: 'The user name already exists. Please choose another one.'
+                });
+                return res;
+            }
+
+            if (err) {
+                return res.status(403).json({message: "Forbidden to access"});
+            }
+            const userId = authorizedData.userId;
+
+            const user = await User.findOneAndUpdate({userId: userId}, {username: newUsername});
+            if (!user) {
+                throw Error("Failed Authorization. Please try sign in again.");
+            } else {
+                res.status(200).json({message: 'Successfully updated user password'});
+            }
+        })
     } catch(err) {
         return res.status(500).json({error: err.message});
     }
@@ -79,23 +81,34 @@ router.put('/update-username', async (req, res) => {
 // Update password
 router.put('/update-password', async (req, res) => {
     try {
-        const {userid} = req.headers;
+        const token = req.headers.authorization;
         const {password, newPassword} = req.body;
-        const user = await User.findOne({ userId: userid });
-        const isCurrentOneMatching = await bcrypt.compare(password, user.password);
-        if (isCurrentOneMatching) {
-            const newHashedPW = await bcrypt.hash(newPassword, saltRound);
-            await User.findOneAndUpdate({ userId: userid }, { password: newHashedPW})
-        } else {
-            res.status(404).json({
-                message: 'Invalid Password. Please check your password again'
-            })
-            return res;
-        }
 
-        res.status(201).json({
-            message: 'Successfully updated user password'
-        });
+        jwt.verify(token, JWT_SECRET, async (err, authorizedData) => {
+            if (err) {
+                return res.status(403).json({message: "Forbidden to access"});
+            }
+
+            const userId = authorizedData.userId;
+
+            const user = await User.findOne({userId});
+            const isPasswordMatching = await bcrypt.compare(password, user.password);
+            if (isPasswordMatching) {
+                const newHashedPW = await bcrypt.hash(newPassword, saltRound);
+                const updatedUser = await User.findOneAndUpdate({userId: userId}, {password: newHashedPW});
+                if (updatedUser) {
+                    res.status(200).json({
+                        message: 'Successfully updated password'
+                    });
+                } else {
+                    throw Error('Failed in Updating process. Please try again.');
+                }
+            } else {
+                res.status(204).json({
+                    message: 'Invalid password. Please check your current password again.'
+                });
+            }
+        })
     } catch(err) {
         return res.status(500).json({error: err.message});
     }
@@ -104,24 +117,30 @@ router.put('/update-password', async (req, res) => {
 // Update email
 router.put('/update-email', async (req, res) => {
     try {
-        const {userid} = req.headers;
+        const jwtToken = req.headers.authorization;
         const {currentEmail, newEmail} = req.body;
-        const user = await User.findOne({ userId: userid });
 
-        if (!user) {
-            res.status(404).json({
-                message: 'The user does not exist.',
-                user: user.toObject()
+        jwt.verify(jwtToken, JWT_SECRET, async (err, authorizedData) => {
+            if (err) {
+                return res.status(403).json({message: "Forbidden to access"});
+            }
+            const userId = authorizedData.userId;
+            const user = await User.findOneAndUpdate({userId: userId}, {email: newEmail});
+
+            if (!user) {
+                res.status(204).json({
+                    message: 'The user does not exist.',
+                    user: user.toObject()
+                });
+                return res;
+            }
+
+            res.status(200).json({
+                message: 'Successfully updated user email',
+                previous_email: currentEmail,
+                new_email: newEmail
             });
-            return res;
-        }
-
-        await User.findOneAndUpdate({ userId: userid }, { email: newEmail});
-        res.status(201).json({
-            message: 'Successfully updated user email',
-            previous_email: currentEmail,
-            new_email: newEmail
-        });
+        })
 
     } catch(err) {
         return res.status(500).json({error: err.message});
@@ -132,28 +151,26 @@ router.put('/update-email', async (req, res) => {
 router.delete('', async (req, res) => {
 // router.delete('', jwtAuth, async (req, res) => {
     try {
-        const { username, password } = req.body;
-        const user = await User.findOne({username: username});
+        const jwtToken = req.headers.authorization;
 
-        if (!user) {
-            return res.status(401).json({
-                message: "User not found",
-                error: "User with matching user ID does not exist"
-            })
-        } 
-        const passwordMatch = await bcrypt.compare(password, user.password);
+        jwt.verify(jwtToken, JWT_SECRET, async (err, authorizedData) => {
+            if (err) {
+                return res.status(403).json({message: "Forbidden to access"});
+            }
+            const userId = authorizedData.userId;
 
-        if (!passwordMatch) {
-            return res.status(401).json({
-                message: "User deletion failed",
-                error: "Invalid password"
-            })
-        }
+            const user = await User.findOne({userId: userId});
 
-        await User.deleteOne({_id: user._id});
-        res.status(201).send("Successfully deleted the user data.");
+            if (!user) {
+                return res.status(401).json({
+                    message: "User not found",
+                    error: "User with matching user ID does not exist"
+                })
+            }
 
-        // TODO: Add authorization for ensuring the user is signed in
+            await User.deleteOne({_id: user._id});
+            res.status(204).send("Successfully deleted the user data.");
+        })
 
     } catch(err) {
         return res.status(500).json({error: err.message});
@@ -182,10 +199,14 @@ router.post('/signin', async (req, res) => {
         }
         // TODO: Add authentication
 
-        // const token = jwt.sign({userId}, JWT_SECRET);
-        // res.json({token: token});
+        jwt.sign({userId}, JWT_SECRET, {expiresIn: "1h"}, (err, token) => {
+            if (err) {
+                return res.status(500).json({message: 'Failed authentication. Please try again'});
+            }
+            return res.status(201).json({message: "Sign in succeeded", user: JSON.stringify(user), token: token});
+        });
+        
 
-        return res.status(201).json({message: "Sign in succeeded", user: JSON.stringify(user)});
     } catch(err) {
         return res.status(500).json({error: err.message});
     }
