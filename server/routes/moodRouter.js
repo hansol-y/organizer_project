@@ -5,8 +5,19 @@ const router = express.Router();
 const User = require('../models/userModel');
 const Mood = require('../models/moodModel');
 
+const cors = require('cors');
+
 const jwt = require('jsonwebtoken');
 const JWT_SECRET = process.env.JWT_SECRET;
+
+const whitelist = ['http://localhost:3000'];
+const corsOptions = {
+    origin: whitelist,
+    credentials: true,
+    optionSuccessStatus: 200
+}
+
+router.use(cors(corsOptions));
 
 // Get all moods of the user
 router.get('', async (req, res) => {
@@ -122,7 +133,7 @@ router.post('', async (req, res) => {
                 return res.status(403).json({message: "Forbidden to access"});
             }
             const userId = authorizedData.userId;
-            const user = await User.findOne({userId: userid});
+            const user = await User.findOne({userId: userId});
 
             const now = new Date();
 
