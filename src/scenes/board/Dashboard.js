@@ -38,10 +38,10 @@ const Dashboard = () => {
     const location = useLocation();
     console.log("Getting user data from react-router-dom location");
     console.log(location);
-    const { userId, password, username, email } = location.state;
+    const { userId, password, username, email, token } = location.state;
 
     const navigateAddMood = () => {
-        navigate('/Create', {state: {userId: userId, password: password, username: username, email: email}});
+        navigate('/Create', {state: {userId: userId, password: password, username: username, email: email, token: token}});
     }
 
     return (

@@ -5,32 +5,56 @@ import {Formik, Field, Form} from 'formik';
 
 import logo from '../../logo.svg';
 
-const backendPort = process.env.BACKEND_PORT;
-const serverBaseUrl = `http://localhost:${backendPort}`;
+const backendUrl = process.env.REACT_APP_BACKEND_URL;
+const serverBaseUrl = `${backendUrl}`;
 const userApiEndpoint = `${serverBaseUrl}/api/user`;
 const moodApiEndpoint = `${serverBaseUrl}/api/mood`;
+
+
 
 const CreateMood = () =>  {
 
     const navigate = useNavigate();
     const location = useLocation();
-    const user = location.state.user;
+    const { userId, password, username, email, token } = location.state;
 
-    const date = Date.now();
+    console.log(userId, password, username, email, token);
 
-    const postMood = async(mood, strength, personal, activeness, date) => {
+    
+
+    const postMood = async(mood, strength, personal, activeness) => {
         try {
+
+            console.log(moodApiEndpoint);
+
+            const date = new Date();
+
+            console.log(date);
+            const year = date.getFullYear();
+            const month = date.getMonth() + 1;
+            const day = date.getDate();
+            const hour = date.getHours();
+            const minute = date.getMinutes();
+            const seconds = date.getSeconds();
+
+            console.log(token);
+
             const response = await axios.post(`${moodApiEndpoint}`, 
             {
                 mood: mood,
                 strength: strength,
                 personal: personal,
                 activeness: activeness,
-                date: date
+                year: year,
+                month: month,
+                day: day,
+                hour: hour,
+                minute: minute,
+                second: seconds
             },
             {
                 headers: {
-                    _id: user._id
+                    Authorization: `${token}`
                 }
             });
 
@@ -38,7 +62,7 @@ const CreateMood = () =>  {
                 throw new Error(response.data);
             } else {
                 alert("New mood is successfully created!");
-                navigate('/Dashboard');
+                navigate('/Dashboard', {state: {userId: userId, password: password, username: username, email: email, token: token}});
             }
         } catch(error) {
             alert(`Failed to register this mood: ${error.message}`);
@@ -63,7 +87,8 @@ const CreateMood = () =>  {
                     strength: 0,
                     personal: 0,
                     activeness: 0,
-                    date: null
+                    year: null,
+
                 }}
                     onSubmit={handleForMoodSubmit}>
                     {
@@ -87,10 +112,6 @@ const CreateMood = () =>  {
                             <br />
                             <Field name="activeness" />
                             <br />
-                            <br />
-                            <label htmlFor='date'>Date</label>
-                            <br />
-                            <Field name="date" />
                             <br />
 
                             <button className='submit' type='submit'>Add Mood</button>
