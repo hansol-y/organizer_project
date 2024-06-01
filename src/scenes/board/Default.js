@@ -9,30 +9,30 @@ import './Board.css';
 const Default = ({ children }) => {
     const navigate = useNavigate();
     const location = useLocation();
-    const { userId, password, username, email } = location.state;
+    const { userId, password, username, email, token } = location.state;
 
     const signOut = () => {
         navigate('/', {state: null});
     }
 
     const navigateMyPage = () => {
-        navigate('/MyPage', {state: {userId: userId, password: password, username: username, email: email}});
+        navigate('/MyPage', {state: {userId: userId, password: password, username: username, email: email, token: token}});
     }
 
     const navigateDashboard = () => {
-        navigate('/Dashboard', {state: {userId: userId, password: password, username: username, email: email}});
+        navigate('/Dashboard', {state: {userId: userId, password: password, username: username, email: email, token: token}});
     }
 
     const navigateCoord = () => {
-        navigate('/Coord', {state: {userId: userId, password: password, username: username, email: email}});
+        navigate('/Coord', {state: {userId: userId, password: password, username: username, email: email, token: token}});
     }
 
     const navigateHistory = () => {
-        navigate('/History', {state: {userId: userId, password: password, username: username, email: email}});
+        navigate('/History', {state: {userId: userId, password: password, username: username, email: email, token: token}});
     }
 
     const navigateSuggestion = () => {
-        navigate('/Suggestion', {state: {userId: userId, password: password, username: username, email: email}});
+        navigate('/Suggestion', {state: {userId: userId, password: password, username: username, email: email, token: token}});
     }
 
     return (
