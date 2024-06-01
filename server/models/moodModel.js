@@ -2,10 +2,20 @@ require('dotenv').config({path: '../.env'});
 
 const mongoose = require("mongoose");
 
+// const Mood = {
+//     happy: "happy/joyful",
+//     sad: "sad/low",
+//     angry: "angry/irritated",
+//     anxious: "anxious/stressed",
+//     calm: "calm/relaxed",
+//     energetic: "energetic/excited"
+// }
+
 const moodSchema = mongoose.Schema(
     {
         mood: {
             type: String,
+            enum: ["happy", "sad", "angry", "anxious", "calm", "energetic"],
             required: true
         },
         strength: { // length of the vector
