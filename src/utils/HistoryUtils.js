@@ -1,5 +1,8 @@
 import useLocation from 'react-router-dom';
 
+import * as tf from '@tensorflow/tfjs';
+import * as knnClassifier from '@tensorflow-models/knn-classifier';
+
 const location = useLocation();
 import axios from 'axios';
 
@@ -7,6 +10,8 @@ const { userId, password, username, email, token } = location.state;
 
 const backendUrl = process.env.REACT_APP_BACKEND_URL;
 const moodApiEndpoint = `${backendUrl}/api/mood`;
+
+const classifier = knnClassifier.create();
 
 export const getMonthlyMoods = async (month, year) => {
     try {
@@ -68,4 +73,10 @@ export const countMoods = (records) => {
         }
     }
     return counts;
+}
+
+export const predictHourlyMood = async (records) => {
+    for (const record of records) {
+        const rtf = tf.convert_to_tensor(record);
+    }
 }
