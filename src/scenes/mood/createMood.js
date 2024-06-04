@@ -25,19 +25,14 @@ const CreateMood = () =>  {
     const postMood = async(mood, strength, personal, activeness) => {
         try {
 
-            console.log(moodApiEndpoint);
-
             const date = new Date();
 
-            console.log(date);
             const year = date.getFullYear();
             const month = date.getMonth() + 1;
             const day = date.getDate();
             const hour = date.getHours();
             const minute = date.getMinutes();
             const seconds = date.getSeconds();
-
-            console.log(token);
 
             const response = await axios.post(`${moodApiEndpoint}`, 
             {
