@@ -5,16 +5,13 @@ import axios from 'axios';
 
 import './Users.css';
 
-// react-router-dom v6 does not use useHistory anymore; use useNavigate instead!
-
-// const backendPort = process.env.BACKEND_PORT;
 const backendUrl = process.env.REACT_APP_BACKEND_URL;
 
 const userApiEndpoint = `${backendUrl}/api/user`
 
 const SignIn = () => {
 
-    const [user, setUser] =useState(null);
+    const [user, setUser] = useState(null);
     const navigate = useNavigate();
 
     // const { username, password } = req.body;
@@ -32,8 +29,9 @@ const SignIn = () => {
                 throw new Error(`Sign in failed: ${response.data}`);
             } else {
                 const userData = JSON.parse(response.data.user);
+                const token = response.data.token;
                 setUser(userData);
-                navigate("/Dashboard", { state: { userId: userId, password: password, username: userData.username, email: userData.email}});
+                navigate("/Dashboard", { state: { userId: userId, password: password, username: userData.username, email: userData.email, token: token }});
                 alert(`Welcome ${userData.username}!`);
             }
         } catch(error) {
