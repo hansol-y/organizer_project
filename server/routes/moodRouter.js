@@ -71,11 +71,7 @@ router.get(`/mood`, async (req, res) => {
 // Get the user's all the mood records in given date
 router.get('/date', async (req, res) => {
     // const userid = req.headers['userid'];
-    const { date } = req.query;
-    const dateObj = new Date(date);
-    const year = dateObj.getFullYear();
-    const month = dateObj.getMonth() + 1;
-    const dateInNum = dateObj.getDate();
+    const { date, month, year } = req.query;
     const token = req.headers.authorization;
     try {
         jwt.verify(token, JWT_SECRET, async (err, authorizedData) => {
@@ -84,7 +80,7 @@ router.get('/date', async (req, res) => {
             }
             const userId = authorizedData.userId;
             const user = await User.findOne({userId: userId});
-            const result = await Mood.find({user: user, date: dateInNum, month: month, year: year});
+            const result = await Mood.find({user: user, date: date, month: month, year: year});
 
             if (result.length === 0) {
                 res.status(204).json(`No moods found for the given period`);
@@ -126,7 +122,8 @@ router.get('/month', async (req, res) => {
 router.post('', async (req, res) => {
     const token = req.headers.authorization;
     try {
-        let { mood, strength, personal, activeness, date, year, month, hour, minute, second } = req.body;
+        console.log(req.body);
+        let { mood, strength, personal, activeness, date, year, month, hour, minute, second, day } = req.body;
 
         jwt.verify(token, JWT_SECRET, async (err, authorizedData) => {
             if (err) {
@@ -143,6 +140,9 @@ router.post('', async (req, res) => {
             const hourToStore = !(hour) ? now.getHours() : hour;
             const minToStore = !(minute) ? now.getMinutes() : minute;
             const secToStore = !(second) ? now.getSeconds() : second;
+            const dayToStore = !(day) ? now.getDay() : day;
+            console.log(dayToStore);
+            console.log(now.getDay());
 
             const newMood = new Mood({
                 mood: mood,
@@ -155,6 +155,7 @@ router.post('', async (req, res) => {
                 hour: hourToStore,
                 minute: minToStore,
                 second: secToStore,
+                day: dayToStore,
                 user: user
             });
 
