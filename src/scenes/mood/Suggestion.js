@@ -5,8 +5,6 @@ import axios from 'axios';
 
 import logo from '../../assets/coordinate_s.png';
 
-import { predictNextMood } from '../../utils/SuggestionUtils';
-
 const backendUrl = process.env.REACT_APP_BACKEND_URL;
 const serverBaseUrl = `${backendUrl}`;
 const moodApiEndpoint = `${serverBaseUrl}/api/mood`;
@@ -32,9 +30,11 @@ const Suggestion = () => {
             });
 
             if (response.status === 201) {
-                const predictedClass = predictNextMood(response.data);
-                console.log(predictedClass);
-                return predictedClass;
+                // const predictedClass = predictNextMood(response.data);
+                // console.log(predictedClass);
+                // return predictedClass;
+
+                // TODO: call prediction API
             } else if (response.status === 204) {
                 throw Error("You haven't recorded any feelings this month. We provide the suggestion based on your mood records in a month.")
             } else {
