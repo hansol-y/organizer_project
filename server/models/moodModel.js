@@ -51,6 +51,10 @@ const moodSchema = mongoose.Schema(
         second: {
             type: Number
         },
+        day: {
+            type: Number,
+            required: true
+        },
         user: {
             type: Object,
             required: true
