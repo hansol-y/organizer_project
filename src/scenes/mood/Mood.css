@@ -1,0 +1,16 @@
+.pie-chart {
+    width: 40%;
+    position: relative;
+}
+
+.pie-chart canvas {
+    width: 40%;
+    height: auth;
+}
+
+.present-prediction {
+    width: 50%;
+    padding-top: 3%;
+    font-size: 150%;
+    font-weight: 200%;
+}

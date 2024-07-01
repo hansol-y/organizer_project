@@ -23,7 +23,7 @@ def predict_by_time():
     day = request.args.get('day')
     model = RandomForestRegressor(random_state=42)
     
-    if len(records) < 30:  # Not enough data
+    if len(records) < 10:  # Not enough data
         return jsonify({"prediction": "need more data for prediction"}), 500
     
     X = [] # X = [time quarter, day]
@@ -47,7 +47,7 @@ def predict_by_previous_moods():
     records = json_data.get('records')
     model = RandomForestRegressor(random_state=42)
     
-    if len(records) < 30:
+    if len(records) < 10:
         return jsonify({"prediction": "need more data for prediction"}), 500
     
     prevs = deque()
@@ -91,7 +91,7 @@ def label_mood_data(mood):
     return MOOD_TO_LABEL[mood]
     
 def convert_label_to_mood(label):
-    return LABEL_TO_MOOD[label]
+    return LABEL_TO_MOOD[round(label)]
 
 def count_mood_percentage(records):
     ret = {i: 0 for i in MOOD_TO_LABEL}
