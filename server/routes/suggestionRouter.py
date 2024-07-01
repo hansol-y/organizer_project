@@ -7,6 +7,7 @@ from sklearn.ensemble import RandomForestRegressor
 from collections import deque
 
 # load_dotenv() # TODO: finish up getting env data
+# TODO: Add model verification
 
 app = Flask(__name__)
 CORS(app)
@@ -16,7 +17,7 @@ MOOD_TO_LABEL = {"happy": 0, "sad": 1, "angry": 2, "calm": 3, "anxious": 4, "ene
 
 @app.route('/prediction/time', methods=['POST'])
 def predict_by_time():
-    print("Getting prediction by time")
+    app.logger.info("Getting prediction by time\n")
     json_data = request.get_json()
     records = json_data.get('records')
     day = request.args.get('day')
@@ -41,6 +42,7 @@ def predict_by_time():
     
 @app.route('/prediction/mood', methods=['POST'])
 def predict_by_previous_moods():
+    app.logger.info("Getting prediction by mood")
     json_data = request.get_json()
     records = json_data.get('records')
     model = RandomForestRegressor(random_state=42)
@@ -67,18 +69,20 @@ def predict_by_previous_moods():
     
     return jsonify({"prediction": convert_label_to_mood(res[0])}), 200
 
-# @app.route('/analysis/mood_percentage', methods=['GET'])
-# def analyse_given_moods():
-#     records = request.json
-#     for record in records:
-#         record
+@app.route('/analysis/mood_percentage', methods=['POST'])
+def analyse_given_moods():
+    json_data = request.get_json()
+    records = json_data.get('records')
+    ratio = count_mood_percentage(records)
+    
+    return jsonify({"percentage_analysis": ratio})
     
 def set_time_quarter(time):
     if 0 <= time < 7:
         return 0 # dawn
     elif 7 <= time < 12:
         return 1 # morning
-    elif 12 <= time < 7:
+    elif 12 <= time < 19:
         return 2 # afternoon
     else:
         return 3 # night
@@ -88,6 +92,17 @@ def label_mood_data(mood):
     
 def convert_label_to_mood(label):
     return LABEL_TO_MOOD[label]
+
+def count_mood_percentage(records):
+    ret = {i: 0 for i in MOOD_TO_LABEL}
+    for record in records:
+        ret[record["mood"]] += 1
+        
+    numRecords = len(records)
+    for key in ret:
+        ret[key] = (ret[key]/numRecords)*100
+        
+    return ret
     
 if __name__ == '__main__':
     app.run(debug=True, port=8000)
