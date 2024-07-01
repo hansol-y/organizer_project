@@ -68,6 +68,45 @@ router.get(`/mood`, async (req, res) => {
     }
 });
 
+// Get all moods of the user in last 6 months
+router.get('/last-six-month', async (req, res) => {
+    const token = req.headers.authorization;
+    try {
+        jwt.verify(token, JWT_SECRET, async (err, authorizedData) => {
+            if (err) {
+                return res.status(403).json({message: "Forbidden to access"});
+            }
+            const userId = authorizedData.userId;
+            const user = await User.findOne({userId: userId});
+            let result = [];
+            
+            const today = new Date();
+            let month = today.getMonth() + 1;
+            let year = today.getFullYear();
+            for (let i = 0; i < 6; i++) {
+                console.log(`Getting mood data of ${year}/${month}`)
+                const curr = await Mood.find({user: user, month: month, year: year});
+                result = result.concat(curr);
+
+                if (month > 1) {
+                    month -= 1;
+                } else {
+                    month = 12;
+                    year -= 1;
+                }
+            }
+
+            if (result.length === 0) {
+                res.status(204).send(`No moods found for user ${user.userId} in last 6 months`);
+            } else {
+                res.status(200).json(result);
+            }
+        })
+    } catch(err) {
+        res.status(500).send({error: err});
+    }
+});
+
 // Get the user's all the mood records in given date
 router.get('/date', async (req, res) => {
     // const userid = req.headers['userid'];
