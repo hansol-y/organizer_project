@@ -121,8 +121,8 @@ router.get('/date', async (req, res) => {
             const user = await User.findOne({userId: userId});
             const result = await Mood.find({user: user, date: date, month: month, year: year});
 
-            if (result.length === 0) {
-                res.status(204).json(`No moods found for the given period`);
+            if (result.length === 0 || !result) {
+                res.status(204);
             } else {
                 res.status(201).json(result);
             }
