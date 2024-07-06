@@ -42,12 +42,11 @@ const MoodCoord = () => {
             console.log(response);
 
 
-
             if (response.status === 201) {
                 const moods = response.data;
                 const vecs = []
                 for (const mood of moods) {
-                    vecs.push([mood.personal, mood.activeness, mood.strength]);
+                    vecs.push([mood.personal, mood.activeness, mood.strength, mood.mood]);
                 }
                 // X coordinate: personal, Y coordinate: activeness, length: stength
                 setVectors(vecs);
