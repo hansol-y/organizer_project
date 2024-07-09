@@ -21,7 +21,6 @@ const MoodCoord = () => {
     // 1. get vectors
     const getVectors= async () => {
         try {
-            // TODO: get vectors using GET API
             const today = new Date();
             const date = today.getDate();
             const month = today.getMonth() + 1;

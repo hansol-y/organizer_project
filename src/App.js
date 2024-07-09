@@ -2,7 +2,6 @@ import SignUp from './scenes/users/SignUp.js';
 import SignIn from './scenes/users/SignIn.js';
 import Main from './scenes/board/Main.js';
 import Dashboard from './scenes/board/Dashboard.js';
-import Create from './scenes/mood/createMood.js';
 import MyPage from './scenes/users/MyPage.js';
 import MoodCoord from './scenes/mood/MoodCoord.js';
 import History from './scenes/mood/MoodHistory.js';
@@ -25,11 +24,6 @@ function App() {
           <Route exact path="/Dashboard" element={
             <Default>
               <Dashboard />
-            </Default>
-          } />
-          <Route exact path="/Create" element={
-            <Default>
-              <Create />
             </Default>
           } />
           <Route exact path="/MyPage" element={

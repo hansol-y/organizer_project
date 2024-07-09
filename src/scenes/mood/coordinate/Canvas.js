@@ -11,5 +11,5 @@ const Canvas = ({vectors, width, height}) => {
 
     return <canvas ref={canvasRef} width={width} height={height} />;
 };
-// TODO: Debugging
+
 export default Canvas;
