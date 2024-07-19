@@ -1,9 +1,10 @@
 import { useRef, useEffect, useCallback } from 'react';
 
 const ARROW_HEAD_LENGTH = 10;
-const COLOR_CODE = {"happy":"#FFD700", "sad":"#1E90FF", "angry":"#FF4500", "calm":"#00CED1", "energetic":"#32CD32"}
+const COLOR_CODE = {"happy":"#FDFFB6", "anxious": "#FFD6A5", "sad":"#D9EDF8", "angry":"#FFADAD", "calm":"#DEDAF4", "energetic":"#E4F1EE"}
 
 export const useDraw = (mood, strength, setCoordinates, width, height) => {
+    console.log(mood, strength, width, height);
     const canvasRef = useRef(null);
     const ctxRef = useRef(null);
     const isDrawing = useRef(false);
@@ -16,7 +17,7 @@ export const useDraw = (mood, strength, setCoordinates, width, height) => {
         context.lineWidth = strength;
 
         ctxRef.current = context;
-    }, [strength]); 
+    }, [mood, strength]); 
 
     const drawArrowHead = (ctx, fromX, fromY, toX, toY, headLength) => {
         const angle = Math.atan2(toY - fromY, toX - fromX);
@@ -37,13 +38,11 @@ export const useDraw = (mood, strength, setCoordinates, width, height) => {
         console.log("Finished drawing vectors...");
         ctxRef.current.closePath();
         isDrawing.current = false;
+        ctxRef.current.clearRect(0, 0, width, height);
+        draw();
 
         const { screenX, screenY } = nativeEvent;
         const { left, top } = canvasRef.current.getBoundingClientRect();
-        console.log("offsets");
-        console.log(screenX, screenY);
-        console.log(width, height);
-        console.log(nativeEvent);
         const canvasX = screenX - left;
         const canvasY = screenY - top;
         const widthDiv = width / 10;
@@ -52,10 +51,12 @@ export const useDraw = (mood, strength, setCoordinates, width, height) => {
         const y = Math.round((canvasY - height / 2) / heightDiv) >= 5 ? 5 : Math.round((canvasY - height / 2) / heightDiv);
 
         const ctx = ctxRef.current;
-
+        ctx.beginPath();
+        console.log(`Checking mood before setting the color of the vector: ${mood}`);
+        ctx.strokeStyle = COLOR_CODE[mood];
+        ctx.moveTo(width / 2, height / 2);
         ctx.lineTo(canvasX, canvasY);
         drawArrowHead(ctx, width / 2, height / 2, canvasX, canvasY, ARROW_HEAD_LENGTH);
-        ctx.strokeStyle = COLOR_CODE[mood];
 
         ctx.stroke();
 
@@ -101,12 +102,24 @@ export const useDraw = (mood, strength, setCoordinates, width, height) => {
         const ctx = ctxRef.current;
         if (!isDrawing.current) return;
 
-        const { offsetX, offsetY } = nativeEvent;
-        ctx.lineTo(offsetX, offsetY);
-        console.log(offsetX, offsetY);
+        const { left, top } = canvasRef.current.getBoundingClientRect();
 
-        drawArrowHead(ctx, width / 2, height / 2, offsetX, offsetY, ARROW_HEAD_LENGTH);
+        ctx.clearRect(0, 0, width, height);
+        draw();
+
+        ctx.beginPath();
+        console.log(`Checking mood before setting the color of the vector: ${mood}`);
         ctx.strokeStyle = COLOR_CODE[mood];
+        const { screenX, screenY } = nativeEvent;
+        const canvasX = screenX - left;
+        const canvasY = screenY - top;
+        ctx.moveTo(width / 2, height / 2);
+        
+        ctx.lineTo(canvasX, canvasY);
+        console.log(screenX, screenY);
+
+        drawArrowHead(ctx, width / 2, height / 2, screenX, screenY, ARROW_HEAD_LENGTH);
+        
 
         ctx.stroke();
 

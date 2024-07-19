@@ -11,7 +11,7 @@ const backendUrl = process.env.REACT_APP_BACKEND_URL;
 const serverBaseUrl = `${backendUrl}`;
 const moodApiEndpoint = `${serverBaseUrl}/api/mood`;
 
-const COLOR_CODE = {"happy":"#FFD700", "sad":"#1E90FF", "angry":"#FF4500", "calm":"#00CED1", "energetic":"#32CD32"}
+const COLOR_CODE = {"happy":"#FDFFB6", "anxious": "#FFD6A5", "sad":"#D9EDF8", "angry":"#FFADAD", "calm":"#DEDAF4", "energetic":"#E4F1EE"}
 const CANVAS_WIDTH = 400;
 const CANVAS_HEIGHT = 400;
 
@@ -20,7 +20,7 @@ const Dashboard = () => {
     console.log("Getting user data from react-router-dom location");
     console.log(location);
     const { userId, password, username, email, token } = location.state;
-    const [ mood, setMood ] = useState();
+    const [ mood, setMood ] = useState(null);
     const [ strength, setStrength ] = useState(0);
     const [ coordinates, setCoordinates ] = useState([]);
 
@@ -98,13 +98,16 @@ const Dashboard = () => {
                 </h1>
             </header>
 
-            <div className='mood-buttons'>
-                <button name='happy' value='happy' style={{ backgroundColor: COLOR_CODE["happy"] }} onClick={handleForMoodClick}>Happy</button>
-                <button name='sad' value='sad' style={{ backgroundColor: COLOR_CODE["sad"] }} onClick={handleForMoodClick}>Sad</button>
-                <button name='angry' value='angry' style={{ backgroundColor: COLOR_CODE["angry"] }} onClick={handleForMoodClick}>Angry</button>
-                <button name='calm' value='calm' style={{ backgroundColor: COLOR_CODE["calm"] }} onClick={handleForMoodClick}>Calm</button>
-                <button name='energetic' value='energetic' style={{ backgroundColor: COLOR_CODE["energetic"] }} onClick={handleForMoodClick}>Energetic</button>
-            </div>
+            {!mood && (
+                <div className='mood-buttons'>
+                    <button name='happy' value='happy' style={{ backgroundColor: COLOR_CODE["happy"] }} onClick={handleForMoodClick}>Happy</button>
+                    <button name='sad' value='sad' style={{ backgroundColor: COLOR_CODE["sad"] }} onClick={handleForMoodClick}>Sad</button>
+                    <button name='angry' value='angry' style={{ backgroundColor: COLOR_CODE["angry"] }} onClick={handleForMoodClick}>Angry</button>
+                    <button name='anxious' value='anxious' style={{ backgroundColor: COLOR_CODE["anxious"] }} onClick={handleForMoodClick}>Anxious</button>
+                    <button name='calm' value='calm' style={{ backgroundColor: COLOR_CODE["calm"] }} onClick={handleForMoodClick}>Calm</button>
+                    <button name='energetic' value='energetic' style={{ backgroundColor: COLOR_CODE["energetic"] }} onClick={handleForMoodClick}>Energetic</button>
+                </div>
+            )}
 
             {mood && (
                 <Dropdown
@@ -114,10 +117,15 @@ const Dashboard = () => {
                     placeholder="Select the strength of your mood"
                 />
             )}
+
+            {mood && (
+                <div className='coordinate'>
+                    <Canvas width={CANVAS_WIDTH} height={CANVAS_HEIGHT} mood={mood} strength={strength} setCoordinates={setCoordinates}/>
+                </div>
+            )}
+        
             
-            <div className='coordinate'>
-                <Canvas width={CANVAS_WIDTH} height={CANVAS_HEIGHT} mood={mood} strength={strength} setCoordinates={setCoordinates}/>
-            </div>
+            
         </div>
     );
 

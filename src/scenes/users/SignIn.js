@@ -2,10 +2,13 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {Formik, Field, Form} from 'formik';
 import axios from 'axios';
+import { GoogleOAuthProvider, useGoogleLogin } from '@react-oauth/google';
 
 import './Users.css';
 
 const backendUrl = process.env.REACT_APP_BACKEND_URL;
+const GOOGLE_OAUTH_CLIENT_ID = process.env.GOOGLE_OAUTH_CLIENT_ID;
+const GOOGLE_OAUTH_PASSWORD = process.env.GOOGLE_OAUTH_PASSWORD;
 
 const userApiEndpoint = `${backendUrl}/api/user`
 
@@ -14,7 +17,10 @@ const SignIn = () => {
     const [user, setUser] = useState(null);
     const navigate = useNavigate();
 
-    // const { username, password } = req.body;
+    // const googleLogIn = useGoogleLogin({
+    //     onSuccess: tokenResponse => console.log(tokenResponse)
+    // });
+
     const signIn = async (userId, password) => {
         console.log(`Calling signIn function for ID ${userId}`);
         try {
@@ -82,6 +88,14 @@ const SignIn = () => {
                         <br />
 
                         <button className="submit" type="submit" disabled={isSubmitting}>Sign In</button>
+
+                        <GoogleOAuthProvider clientId={`${GOOGLE_OAUTH_CLIENT_ID}`}>
+                            <button className="google-login-button" onClick={() => {
+
+                            }}>
+                                Sign in with Google
+                            </button>
+                        </GoogleOAuthProvider>
                     </Form>
                 )}
             </Formik>

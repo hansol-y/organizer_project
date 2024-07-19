@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import axios from 'axios';
 
-import logo from '../../assets/coordinate_s.png';
 import Canvas from './coordinate/Canvas';
 
 const backendUrl = process.env.REACT_APP_BACKEND_URL;
@@ -76,6 +75,7 @@ const MoodCoord = () => {
                     <p>{error.message}</p>
                 )}
                 <Canvas vectors={vectors} width={500} height={500} />
+                
             </div>
         </div>
     )

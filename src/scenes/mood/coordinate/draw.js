@@ -1,7 +1,7 @@
 import { useRef, useEffect, useCallback } from 'react';
 
 const ARROW_HEAD_LENGTH = 10;
-const COLOR_CODE = {"happy":"#FFD700", "sad":"#1E90FF", "angry":"#FF4500", "calm":"#00CED1", "energetic":"#32CD32"}
+const COLOR_CODE = {"happy":"#FDFFB6", "anxious": "#FFD6A5", "sad":"#D9EDF8", "angry":"#FFADAD", "calm":"#DEDAF4", "energetic":"#E4F1EE"}
 
 export const useDraw = () => {
     const canvasRef = useRef(null);
@@ -64,12 +64,14 @@ export const useDraw = () => {
 
             const xCoord = (width / 10) * x
             const yCoord = (height / 10) * y
+
+            console.log(`xCoord: ${xCoord}, yCoord: ${yCoord}`);
             
             ctx.beginPath();
             ctx.lineWidth = thickness;
             ctx.moveTo(centerX, centerY);
-            ctx.lineTo(xCoord, centerY - yCoord);
-            drawArrowHead(ctx, centerX, centerY, xCoord, centerY - yCoord, ARROW_HEAD_LENGTH);
+            ctx.lineTo(centerX + xCoord, centerY + yCoord);
+            drawArrowHead(ctx, centerX, centerY, centerX + xCoord, centerY + yCoord, ARROW_HEAD_LENGTH);
             ctx.strokeStyle = COLOR_CODE[mood];
 
             ctx.stroke();
